@@ -30,16 +30,16 @@ export function ReferenciaCard({
   };
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-4 shadow-soft">
+    <article className="rounded-2xl border border-border bg-card p-4">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <span className="eyebrow">Referencia {indice}</span>
+        <span className="eyebrow">REF. {String(indice).padStart(2, "0")}</span>
         {onEliminar ? (
           <button
             type="button"
             onClick={onEliminar}
-            className="min-h-11 px-2 text-xs text-muted-foreground underline underline-offset-4"
+            className="min-h-11 px-2 text-xs font-bold text-muted-foreground underline underline-offset-4"
           >
-            Quitar bloque
+            Eliminar
           </button>
         ) : null}
       </div>
@@ -51,18 +51,18 @@ export function ReferenciaCard({
             alt={`Referencia visual ${indice}`}
             className="block max-h-72 w-full object-cover"
           />
-          <div className="flex gap-2 border-t border-border bg-secondary p-2">
+          <div className="grid grid-cols-[1fr_auto] gap-2 border-t border-border bg-secondary p-2">
             <button
               type="button"
               onClick={() => galeriaRef.current?.click()}
-              className="min-h-11 flex-1 rounded-lg border border-border bg-card text-sm font-medium"
+              className="min-h-11 rounded-lg border border-border bg-card text-sm font-black"
             >
               Reemplazar
             </button>
             <button
               type="button"
               onClick={() => onChange({ ...referencia, imagen: undefined })}
-              className="min-h-11 shrink-0 rounded-lg border border-border bg-card px-3 text-sm text-destructive"
+              className="grid min-h-11 w-12 place-items-center rounded-lg border border-border bg-card text-destructive"
               aria-label="Eliminar imagen"
             >
               <Trash2 className="h-4 w-4" />
@@ -74,14 +74,14 @@ export function ReferenciaCard({
           <button
             type="button"
             onClick={() => camaraRef.current?.click()}
-            className="flex min-h-14 items-center justify-center gap-2 rounded-xl bg-mustard text-sm font-semibold text-accent-foreground"
+            className="flex min-h-14 items-center justify-center gap-2 rounded-xl bg-mustard text-sm font-black text-accent-foreground"
           >
             <Camera className="h-4 w-4" /> Hacer foto
           </button>
           <button
             type="button"
             onClick={() => galeriaRef.current?.click()}
-            className="flex min-h-14 items-center justify-center gap-2 rounded-xl border border-border bg-card text-sm font-medium text-foreground"
+            className="flex min-h-14 items-center justify-center gap-2 rounded-xl border border-border bg-card text-sm font-black text-foreground"
           >
             <ImagePlus className="h-4 w-4" /> Elegir imagen
           </button>
@@ -123,32 +123,31 @@ export function ReferenciaCard({
         <button
           type="button"
           onClick={() => archivoRef.current?.click()}
-          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-secondary text-sm font-medium text-foreground"
+          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-secondary text-sm font-black text-foreground"
         >
-          <Paperclip className="h-4 w-4" /> Adjuntar archivo (PDF u otro)
+          <Paperclip className="h-4 w-4" /> Adjuntar archivo
         </button>
 
         {referencia.archivo ? (
           <div className="flex items-center justify-between gap-3 rounded-lg bg-mustard-soft px-3 py-2 text-xs">
             <span className="min-w-0 truncate text-accent-foreground">
-              {referencia.archivo.name} · {Math.max(1, Math.round(referencia.archivo.size / 1024))}{" "}
-              KB
+              {referencia.archivo.name} · {Math.max(1, Math.round(referencia.archivo.size / 1024))} KB
             </span>
             <button
               type="button"
               onClick={() => onChange({ ...referencia, archivo: undefined })}
-              className="shrink-0 text-destructive underline underline-offset-2"
+              className="shrink-0 font-bold text-destructive underline underline-offset-2"
             >
               Quitar
             </button>
           </div>
         ) : null}
 
-        <Campo label="URL de referencia">
+        <Campo label="Enlace de referencia">
           <Texto
             value={referencia.url}
             inputMode="url"
-            placeholder="https://…"
+            placeholder="Pinterest, Behance, web..."
             onChange={(url) => onChange({ ...referencia, url })}
           />
         </Campo>
@@ -156,11 +155,11 @@ export function ReferenciaCard({
           <AreaTexto
             rows={3}
             value={referencia.gusta}
-            placeholder="Los colores, la tipografía, la sensación…"
+            placeholder="Los colores, la tipografía, la sensación..."
             onChange={(gusta) => onChange({ ...referencia, gusta })}
           />
         </Campo>
       </div>
-    </div>
+    </article>
   );
 }

@@ -100,10 +100,10 @@ export const ESTILOS = [
 
 export const PRESUPUESTOS = [
   "Menos de 500 €",
-  "500 € – 1.000 €",
-  "1.000 € – 2.500 €",
-  "2.500 € – 5.000 €",
-  "5.000 € – 10.000 €",
+  "500 € - 1.000 €",
+  "1.000 € - 2.500 €",
+  "2.500 € - 5.000 €",
+  "5.000 € - 10.000 €",
   "Más de 10.000 €",
   "Aún por definir",
 ];
@@ -197,8 +197,10 @@ export const briefingVacio = (): Briefing => ({
 
 export { nuevaReferencia };
 
-const BORRADOR_KEY = "enrigraphics.briefing.borrador";
-const GUARDADOS_KEY = "enrigraphics.briefing.guardados";
+export const BORRADOR_KEY = "enrigraphics.briefing.borrador";
+export const GUARDADOS_KEY = "enrigraphics.briefing.guardados";
+export const ULTIMO_KEY = "enrigraphics.briefing.ultimo";
+export const PASO_KEY = "enrigraphics.briefing.paso";
 
 const disponible = () => typeof window !== "undefined" && !!window.localStorage;
 
@@ -207,34 +209,52 @@ export function cargarBorrador(): Briefing | null {
   try {
     const raw = localStorage.getItem(BORRADOR_KEY);
     if (!raw) return null;
-    return { ...briefingVacio(), ...(JSON.parse(raw) as Briefing) };
+    const parsed = JSON.parse(raw) as Briefing;
+    return {
+      ...briefingVacio(),
+      ...parsed,
+      referencias: Array.isArray(parsed.referencias)
+        ? parsed.referencias
+        : briefingVacio().referencias,
+    };
   } catch {
     return null;
   }
 }
 
-export function guardarBorrador(b: Briefing) {
-  if (!disponible()) return;
+export function guardarBorrador(b: Briefing): boolean {
+  if (!disponible()) return false;
   try {
     localStorage.setItem(BORRADOR_KEY, JSON.stringify(b));
+    return true;
   } catch {
-    /* cuota superada: se ignora */
+    return false;
   }
 }
 
 export function limpiarBorrador() {
   if (!disponible()) return;
   localStorage.removeItem(BORRADOR_KEY);
+  localStorage.removeItem(PASO_KEY);
 }
 
 export function guardarBriefing(b: Briefing): Briefing {
   const final = { ...b, guardadoEn: new Date().toISOString() };
   if (disponible()) {
     try {
+      localStorage.setItem(ULTIMO_KEY, JSON.stringify(final));
+    } catch {
+      // Si ni siquiera cabe el último briefing, el usuario verá el aviso de cuota durante el borrador.
+    }
+    try {
       const previos = listarBriefings();
       localStorage.setItem(GUARDADOS_KEY, JSON.stringify([final, ...previos].slice(0, 20)));
     } catch {
-      /* cuota superada */
+      try {
+        localStorage.setItem(GUARDADOS_KEY, JSON.stringify([final]));
+      } catch {
+        // El resumen seguirá funcionando con el estado de navegación aunque el historial local falle.
+      }
     }
   }
   return final;
@@ -244,14 +264,37 @@ export function listarBriefings(): Briefing[] {
   if (!disponible()) return [];
   try {
     const raw = localStorage.getItem(GUARDADOS_KEY);
-    return raw ? (JSON.parse(raw) as Briefing[]) : [];
+    const guardados = raw ? (JSON.parse(raw) as Briefing[]) : [];
+    if (guardados.length) return guardados;
+    const ultimo = localStorage.getItem(ULTIMO_KEY);
+    return ultimo ? [JSON.parse(ultimo) as Briefing] : [];
   } catch {
-    return [];
+    try {
+      const ultimo = localStorage.getItem(ULTIMO_KEY);
+      return ultimo ? [JSON.parse(ultimo) as Briefing] : [];
+    } catch {
+      return [];
+    }
   }
 }
 
-/** Reduce la imagen para que quepa cómodamente en el almacenamiento local. */
-export function leerImagenComprimida(file: File, max = 1400): Promise<string> {
+export function guardarPaso(paso: number): boolean {
+  if (!disponible()) return false;
+  try {
+    localStorage.setItem(PASO_KEY, String(paso));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function cargarPaso(): number {
+  if (!disponible()) return 1;
+  const paso = Number(localStorage.getItem(PASO_KEY));
+  return Number.isFinite(paso) ? Math.min(6, Math.max(1, paso)) : 1;
+}
+
+export function leerImagenComprimida(file: File, max = 1600): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = () => reject(new Error("No se pudo leer la imagen"));
@@ -262,12 +305,12 @@ export function leerImagenComprimida(file: File, max = 1400): Promise<string> {
       img.onload = () => {
         const escala = Math.min(1, max / Math.max(img.width, img.height));
         const canvas = document.createElement("canvas");
-        canvas.width = Math.round(img.width * escala);
-        canvas.height = Math.round(img.height * escala);
+        canvas.width = Math.max(1, Math.round(img.width * escala));
+        canvas.height = Math.max(1, Math.round(img.height * escala));
         const ctx = canvas.getContext("2d");
         if (!ctx) return resolve(src);
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL("image/jpeg", 0.72));
+        resolve(canvas.toDataURL("image/jpeg", 0.82));
       };
       img.src = src;
     };
@@ -284,31 +327,4 @@ export function leerArchivo(file: File): Promise<Attachment> {
     reader.onload = () => resolve({ ...meta, dataUrl: String(reader.result) });
     reader.readAsDataURL(file);
   });
-}
-
-export function progresoBriefing(b: Briefing): number {
-  const campos: Array<string | string[]> = [
-    b.cliente.nombre,
-    b.cliente.empresa,
-    b.cliente.telefono,
-    b.cliente.email,
-    b.cliente.contacto,
-    b.tipos,
-    b.general.descripcion,
-    b.general.objetivo,
-    b.general.publico,
-    b.general.fecha,
-    b.general.presupuesto,
-    b.general.decisor,
-    b.creativa.coloresGustan,
-    b.creativa.coloresEvitar,
-    b.creativa.tipografiasGustan,
-    b.creativa.estilos,
-    b.referencias.some((r) => r.imagen || r.url || r.archivo) ? "ok" : "",
-    b.notas,
-  ];
-  const hechos = campos.filter((c) =>
-    Array.isArray(c) ? c.length > 0 : c.trim().length > 0,
-  ).length;
-  return Math.round((hechos / campos.length) * 100);
 }

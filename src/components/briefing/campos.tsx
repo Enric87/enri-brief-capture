@@ -13,15 +13,19 @@ export function Seccion({
   children: ReactNode;
 }) {
   return (
-    <section className="border-t border-border pt-8">
-      <div className="mb-5 flex items-start gap-3">
-        <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-mustard-soft text-xs font-bold text-accent-foreground">
+    <section className="rounded-[2rem] border border-border bg-card px-5 py-6 shadow-soft sm:px-7 sm:py-8">
+      <div className="mb-6 flex items-start gap-5 border-b border-border pb-5">
+        <span className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-mustard text-xl font-black text-accent-foreground">
           {numero}
         </span>
         <div className="min-w-0">
-          <h2 className="text-lg font-semibold tracking-tight text-foreground">{titulo}</h2>
+          <h2 className="text-[2.15rem] font-black leading-[1.05] tracking-tight text-foreground sm:text-5xl">
+            {titulo}
+          </h2>
           {descripcion ? (
-            <p className="mt-1 text-sm text-muted-foreground">{descripcion}</p>
+            <p className="mt-3 text-[1.35rem] leading-[1.12] text-muted-foreground sm:text-2xl">
+              {descripcion}
+            </p>
           ) : null}
         </div>
       </div>
@@ -41,7 +45,7 @@ export function Campo({
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-sm font-medium text-foreground">{label}</span>
+      <span className="mb-1.5 block text-sm font-bold text-foreground">{label}</span>
       {children}
       {ayuda ? <span className="mt-1.5 block text-xs text-muted-foreground">{ayuda}</span> : null}
     </label>
@@ -133,9 +137,9 @@ export function Chips({
             onClick={() => onToggle(o)}
             aria-pressed={activo}
             className={cn(
-              "min-h-11 rounded-full border px-4 text-sm transition-colors",
+              "min-h-11 rounded-full border px-4 text-sm font-bold transition-colors",
               activo
-                ? "border-mustard bg-mustard text-accent-foreground font-medium"
+                ? "border-foreground bg-foreground text-card"
                 : "border-border bg-card text-foreground hover:bg-secondary",
             )}
           >
@@ -164,14 +168,16 @@ export function TarjetaTipo({
       onClick={onClick}
       aria-pressed={activo}
       className={cn(
-        "min-h-[5.5rem] rounded-xl border p-4 text-left transition-all",
+        "min-h-[5.75rem] rounded-2xl border p-4 text-left transition-all",
         activo
-          ? "border-mustard bg-mustard-soft shadow-soft"
-          : "border-border bg-card hover:border-mustard/60",
+          ? "border-foreground bg-mustard-soft shadow-soft"
+          : "border-border bg-card hover:border-mustard/70",
       )}
     >
-      <span className="block text-base font-semibold text-foreground">{titulo}</span>
-      <span className="mt-1 block text-xs text-muted-foreground">{desc}</span>
+      <span className="block text-base font-black text-foreground">{titulo}</span>
+      <span className="mt-1 block text-xs font-medium leading-snug text-muted-foreground">
+        {desc}
+      </span>
     </button>
   );
 }
