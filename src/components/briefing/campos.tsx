@@ -36,7 +36,7 @@ export function Campo({
   children,
 }: {
   label: string;
-  ayuda?: string;
+  ayuda?: string | undefined;
   children: ReactNode;
 }) {
   return (

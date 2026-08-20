@@ -27,7 +27,7 @@ export const Route = createFileRoute("/resumen")({
   component: ResumenPage,
 });
 
-function Dato({ label, valor }: { label: string; valor?: string }) {
+function Dato({ label, valor }: { label: string; valor?: string | undefined }) {
   if (!valor || !valor.trim()) return null;
   return (
     <div className="border-b border-border py-3 last:border-0">
