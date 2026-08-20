@@ -183,7 +183,7 @@ function BriefingPage() {
               proyecto
             </h1>
             <p className="mt-4 max-w-lg text-[1.42rem] leading-[1.13] text-muted-foreground sm:text-3xl">
-              Cuéntame qué necesitas para empezar tu proyecto.
+              Cuéntame qué necesitas para empezar tu proyecto
             </p>
           </div>
 
