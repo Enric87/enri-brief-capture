@@ -2,13 +2,13 @@ export type Attachment = {
   name: string;
   size: number;
   type: string;
-  dataUrl?: string;
+  dataUrl?: string | undefined;
 };
 
 export type Referencia = {
   id: string;
-  imagen?: string;
-  archivo?: Attachment;
+  imagen?: string | undefined;
+  archivo?: Attachment | undefined;
   url: string;
   gusta: string;
 };
@@ -77,7 +77,7 @@ export type Briefing = {
     reglaY: string;
   };
   notas: string;
-  guardadoEn?: string;
+  guardadoEn?: string | undefined;
 };
 
 export const TIPOS_PROYECTO = [
