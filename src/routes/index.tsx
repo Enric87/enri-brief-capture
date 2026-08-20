@@ -138,9 +138,14 @@ function BriefingPage() {
     <div ref={topRef} className="min-h-screen bg-background pb-28">
       <header className="px-5 pt-12 pb-8">
         <div className="mx-auto max-w-2xl">
-          <div className="flex items-center justify-between gap-4">
-            <div className="text-[1.38rem] font-black uppercase tracking-[0.06em] text-foreground">
-              ENRIGRAPHICS
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="text-[1.35rem] font-black lowercase tracking-[-0.04em] text-foreground">
+                enrigraphics<span className="text-mustard">.</span>
+              </div>
+              <div className="mt-1 hidden text-[0.72rem] font-bold uppercase tracking-[0.08em] text-muted-foreground sm:block">
+                Branding / diseño / web / apps / automatización
+              </div>
             </div>
             <button
               type="button"
@@ -152,6 +157,7 @@ function BriefingPage() {
           </div>
 
           <div className="pt-10">
+            <div className="mb-8 h-7 w-7 rounded-md bg-mustard shadow-soft" aria-hidden="true" />
             <p className="eyebrow text-[1.05rem] font-black">Briefing de cliente</p>
             <h1 className="mt-3 text-[3.9rem] font-black leading-[0.95] tracking-[-0.07em] text-foreground sm:text-8xl">
               Nuevo
