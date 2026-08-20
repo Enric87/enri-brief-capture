@@ -12,6 +12,7 @@ import {
   Texto,
 } from "@/components/briefing/campos";
 import { ReferenciaCard } from "@/components/briefing/referencia-card";
+import { guardarBriefingEnNube, supabaseConfigurado } from "@/lib/cloud-briefings";
 import {
   briefingVacio,
   cargarBorrador,
@@ -111,7 +112,7 @@ function BriefingPage() {
     topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const onGuardar = () => {
+  const onGuardar = async () => {
     setEnviado(true);
     if (!b.cliente.nombre.trim() || b.tipos.length === 0) {
       toast("Faltan un par de datos", {
@@ -120,8 +121,25 @@ function BriefingPage() {
       irPaso(!b.cliente.nombre.trim() ? 1 : 2);
       return;
     }
-    guardarBriefing(b);
-    toast.success("Briefing guardado", { description: "Ya puedes revisar el resumen." });
+    const final = guardarBriefing(b);
+    if (supabaseConfigurado()) {
+      const nube = await guardarBriefingEnNube(final);
+      if (nube.ok) {
+        toast.success("Briefing guardado", {
+          description: "Se ha guardado en la base de datos y en este dispositivo.",
+        });
+      } else {
+        toast.warning("Guardado local listo", {
+          description:
+            "No se pudo guardar en la base de datos. El briefing queda guardado en este dispositivo.",
+        });
+        console.warn("No se pudo guardar el briefing en Supabase", nube);
+      }
+    } else {
+      toast.warning("Guardado local listo", {
+        description: "Faltan las variables de Supabase para guardar también en la base de datos.",
+      });
+    }
     void navigate({ to: "/resumen" });
   };
 
